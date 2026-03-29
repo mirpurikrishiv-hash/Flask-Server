@@ -3,9 +3,8 @@ import requests
 
 app = Flask(__name__)
 
-# function to get a single non-programming joke
 def get_joke():
-    url = "https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=single,twopart"
+    url = "https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit"
     res = requests.get(url).json()
 
     if res["type"] == "single":
@@ -19,12 +18,8 @@ def joke():
 
 @app.route("/many-jokes")
 def jokes():
-    # get count from URL, default = 5
     count = int(request.args.get("count", 5))
-
     jokes_list = [get_joke() for _ in range(count)]
-
     return ''.join(f"<h2>{j}</h2>" for j in jokes_list)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# IMPORTANT: expose app as "app"
