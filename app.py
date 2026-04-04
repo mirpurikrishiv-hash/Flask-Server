@@ -1,5 +1,6 @@
-from flask import Flask, request, render_string
+from flask import Flask, request, render_template
 import requests
+import random
 
 app = Flask(__name__)
 
@@ -15,298 +16,24 @@ def get_joke():
 # Laughing emojis collection
 LAUGH_EMOJIS = ["😂", "🤣", "😆", "😅", "😄", "😃", "🤪", "😋"]
 
-import random
 def get_random_emoji():
     return random.choice(LAUGH_EMOJIS)
-
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎭 Joke Generator - Make Me Laugh! 😂</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
-            width: 100%;
-            padding: 40px 30px;
-            animation: slideIn 0.4s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            font-size: 2.5em;
-            color: #333;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 1.1em;
-            margin-bottom: 30px;
-        }
-
-        .hero-emoji {
-            font-size: 4em;
-            margin: 20px 0;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .joke-container {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 15px;
-            padding: 30px;
-            margin: 30px 0;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border-left: 5px solid #667eea;
-        }
-
-        .joke-text {
-            font-size: 1.2em;
-            color: #333;
-            line-height: 1.6;
-            font-weight: 500;
-        }
-
-        .joke-emoji {
-            font-size: 2.5em;
-            margin-left: 15px;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s ease;
-            flex: 1;
-            min-width: 150px;
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        button:active {
-            transform: translateY(-1px);
-        }
-
-        .jokes-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .joke-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            border: 2px solid #e0e0e0;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .joke-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-            border-color: #667eea;
-        }
-
-        .joke-card-text {
-            color: #333;
-            font-size: 1.05em;
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-
-        .joke-card-emoji {
-            font-size: 1.8em;
-            text-align: right;
-        }
-
-        .count-display {
-            text-align: center;
-            color: #666;
-            font-size: 0.95em;
-            margin-bottom: 20px;
-        }
-
-        footer {
-            text-align: center;
-            color: #999;
-            font-size: 0.9em;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 25px 20px;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-
-            .hero-emoji {
-                font-size: 3em;
-            }
-
-            .button-group {
-                gap: 10px;
-            }
-
-            button {
-                padding: 12px 20px;
-                font-size: 0.95em;
-            }
-
-            .joke-container {
-                padding: 20px;
-            }
-
-            .joke-text {
-                font-size: 1.05em;
-            }
-
-            .joke-emoji {
-                font-size: 2em;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <div class="hero-emoji">😂</div>
-            <h1>🎭 Joke Generator 🎭</h1>
-            <p class="subtitle">Get your daily dose of laughter! 😆</p>
-        </header>
-
-        %(content)s
-
-        <div class="button-group">
-            <button onclick="location.href='/'">😂 Get One Joke!</button>
-            <button onclick="getMultipleJokes()">🤣 Get 5 Jokes!</button>
-        </div>
-
-        <footer>
-            <p>Made with ❤️ and lots of laughter 😆 — Powered by Joke API</p>
-        </footer>
-    </div>
-
-    <script>
-        function getMultipleJokes() {
-            window.location.href = '/many-jokes?count=5';
-        }
-    </script>
-</body>
-</html>
-"""
-
-SINGLE_JOKE_TEMPLATE = """
-        <div class="joke-container">
-            <span class="joke-text">%(joke)s</span>
-            <span class="joke-emoji">%(emoji)s</span>
-        </div>
-"""
-
-MANY_JOKES_TEMPLATE = """
-        <div class="count-display">
-            📊 Here are %(count)d jokes for you! Get ready to laugh! 🤣
-        </div>
-        <div class="jokes-list">
-            %(jokes)s
-        </div>
-"""
-
-JOKE_CARD_TEMPLATE = """
-        <div class="joke-card">
-            <div class="joke-card-text">%(joke)s</div>
-            <div class="joke-card-emoji">%(emoji)s</div>
-        </div>
-"""
 
 @app.route('/')
 def joke():
     j = get_joke()
     emoji = get_random_emoji()
-    content = SINGLE_JOKE_TEMPLATE % {"joke": j, "emoji": emoji}
-    return HTML_TEMPLATE % {"content": content}
+    return render_template('single_joke.html', joke=j, emoji=emoji)
 
 @app.route("/many-jokes")
 def jokes():
     count = int(request.args.get("count", 5))
-    jokes_list = [get_joke() for _ in range(count)]
-    jokes_html = ''.join(
-        JOKE_CARD_TEMPLATE % {"joke": j, "emoji": get_random_emoji()}
-        for j in jokes_list
-    )
-    content = MANY_JOKES_TEMPLATE % {"count": count, "jokes": jokes_html}
-    return HTML_TEMPLATE % {"content": content}
+    jokes_list = []
+    for _ in range(count):
+        jokes_list.append({
+            'joke': get_joke(),
+            'emoji': get_random_emoji()
+        })
+    return render_template('multiple_jokes.html', jokes=jokes_list)
 
 # IMPORTANT: expose app as "app"

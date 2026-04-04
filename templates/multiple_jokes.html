@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="count-display">
+    📊 Here are {{ jokes|length }} jokes for you! Get ready to laugh! 🤣
+</div>
+<div class="jokes-list">
+    {% for joke_data in jokes %}
+    <div class="joke-card">
+        <div class="joke-card-text">{{ joke_data.joke }}</div>
+        <div class="joke-card-emoji">{{ joke_data.emoji }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
